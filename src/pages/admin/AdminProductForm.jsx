@@ -126,8 +126,8 @@ export default function AdminProductForm() {
   const submit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!form.name || !form.price) {
-      setError("Name and price are required.");
+    if (!form.name) {
+      setError("Name is required.");
       return;
     }
     setSaving(true);
@@ -141,7 +141,7 @@ export default function AdminProductForm() {
     }));
     const payload = {
       ...form,
-      price: Number(form.price),
+      price: Number(form.price) || 0,
       mrp: Number(form.mrp) || 0,
       // when variants exist, total stock is summed on the backend
       stock: variants.length ? 0 : Number(form.stock) || 0,
@@ -191,7 +191,7 @@ export default function AdminProductForm() {
 
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="label">Price (₹) *</label>
+            <label className="label">Price (₹)</label>
             <input type="number" className="input" value={form.price} onChange={set("price")} />
           </div>
           <div>
@@ -276,14 +276,26 @@ export default function AdminProductForm() {
                       className="w-24 rounded border border-sand px-2 py-1 text-sm outline-none focus:border-gold"
                       placeholder="price ₹"
                       value={variantPrice[key] ?? ""}
-                      onChange={(e) => setVariantPrice({ ...variantPrice, [key]: e.target.value })}
+                      onChange={(e) => {
+                        setVariantPrice({ ...variantPrice, [key]: e.target.value });
+                        const firstKey = vKey(combos[0].size, combos[0].color);
+                        if (key === firstKey && e.target.value !== "") {
+                          setForm((f) => ({ ...f, price: e.target.value }));
+                        }
+                      }}
                     />
                     <input
                       type="number" min="0"
                       className="w-24 rounded border border-sand px-2 py-1 text-sm outline-none focus:border-gold"
                       placeholder="MRP ₹"
                       value={variantMrp[key] ?? ""}
-                      onChange={(e) => setVariantMrp({ ...variantMrp, [key]: e.target.value })}
+                      onChange={(e) => {
+                        setVariantMrp({ ...variantMrp, [key]: e.target.value });
+                        const firstKey = vKey(combos[0].size, combos[0].color);
+                        if (key === firstKey && e.target.value !== "") {
+                          setForm((f) => ({ ...f, mrp: e.target.value }));
+                        }
+                      }}
                     />
                   </div>
                 );
