@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api.js";
+import { useConfirm } from "../../context/ConfirmContext.jsx";
 
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
@@ -9,6 +10,7 @@ export default function AdminCustomers() {
   const [newPass, setNewPass] = useState("");
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
+  const { confirm } = useConfirm();
 
   const load = () =>
     api
@@ -36,6 +38,22 @@ export default function AdminCustomers() {
       setNewPass("");
     } catch (e) {
       setMsg(e.response?.data?.detail || "Could not reset password.");
+    }
+  };
+
+  const removeCustomer = async (c) => {
+    const ok = await confirm({
+      title: "Delete customer?",
+      message: `Delete ${c.name} (${c.email})? Their past orders stay but get unlinked. This cannot be undone.`,
+      confirmText: "Delete",
+    });
+    if (!ok) return;
+    try {
+      await api.delete(`/api/admin/customers/${c.id}`);
+      setCustomers((list) => list.filter((x) => x.id !== c.id));
+      setMsg(`${c.email} deleted.`);
+    } catch (e) {
+      setMsg(e.response?.data?.detail || "Could not delete customer.");
     }
   };
 
@@ -72,7 +90,14 @@ export default function AdminCustomers() {
             <tbody>
               {customers.map((c) => (
                 <tr key={c.id} className="border-b border-sand/60 align-top">
-                  <td className="p-3 font-medium">{c.name}</td>
+                  <td className="p-3 font-medium">
+                    {c.name}
+                    {c.reset_requested && (
+                      <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
+                        🔑 reset requested
+                      </span>
+                    )}
+                  </td>
                   <td className="p-3 text-ink/70">{c.email}</td>
                   <td className="p-3 text-ink/70">{c.phone || "—"}</td>
                   <td className="p-3 text-ink/70">
@@ -108,12 +133,20 @@ export default function AdminCustomers() {
                         </button>
                       </div>
                     ) : (
-                      <button
-                        onClick={() => { setResetId(c.id); setNewPass(""); setMsg(""); }}
-                        className="rounded-full border border-maroon/30 px-3 py-1 text-xs font-medium text-maroon hover:bg-maroon hover:text-cream"
-                      >
-                        Reset Password
-                      </button>
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => { setResetId(c.id); setNewPass(""); setMsg(""); }}
+                          className="rounded-full border border-maroon/30 px-3 py-1 text-xs font-medium text-maroon hover:bg-maroon hover:text-cream"
+                        >
+                          Reset Password
+                        </button>
+                        <button
+                          onClick={() => removeCustomer(c)}
+                          className="rounded-full border border-red-300 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-600 hover:text-white"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
