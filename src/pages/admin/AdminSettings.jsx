@@ -1,0 +1,173 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { api } from "../../api.js";
+
+export default function AdminSettings() {
+  const [cfg, setCfg] = useState(null);
+  const [saved, setSaved] = useState(false);
+  const navigate = useNavigate();
+
+  // change-login form
+  const [cred, setCred] = useState({
+    current_password: "", new_username: "", new_password: "",
+  });
+  const [credMsg, setCredMsg] = useState("");
+  const [credErr, setCredErr] = useState("");
+
+  useEffect(() => {
+    api
+      .get("/api/admin/settings")
+      .then((r) => setCfg(r.data))
+      .catch((e) => e.response?.status === 401 && navigate("/admin/login"));
+  }, []);
+
+  const save = async () => {
+    setSaved(false);
+    const { data } = await api.put("/api/admin/settings", {
+      enable_cod: cfg.enable_cod,
+      shipping_per_500g: Number(cfg.shipping_per_500g),
+      free_shipping_above: Number(cfg.free_shipping_above),
+      cod_fee: Number(cfg.cod_fee),
+      banner_active: cfg.banner_active,
+      banner_text: cfg.banner_text,
+    });
+    setCfg(data);
+    setSaved(true);
+  };
+
+  const saveCreds = async () => {
+    setCredErr("");
+    setCredMsg("");
+    try {
+      const { data } = await api.put("/api/admin/credentials", {
+        current_username: cfg.admin_username,
+        current_password: cred.current_password,
+        new_username: cred.new_username,
+        new_password: cred.new_password,
+      });
+      setCredMsg(`Login updated. Username: ${data.username}. Use new details next login.`);
+      setCred({ current_password: "", new_username: "", new_password: "" });
+      setCfg({ ...cfg, admin_username: data.username });
+    } catch (err) {
+      setCredErr(err.response?.data?.detail || "Update failed.");
+    }
+  };
+
+  if (!cfg) return <p className="text-ink/50">Loading…</p>;
+
+  const set = (k) => (e) =>
+    setCfg({ ...cfg, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value });
+
+  return (
+    <div>
+      <h1 className="font-serif text-3xl text-maroon">Store Settings</h1>
+
+      <div className="mt-6 space-y-6 rounded-xl border border-sand bg-white p-6">
+        {/* COD toggle */}
+        <label className="flex items-center justify-between">
+          <div>
+            <div className="font-medium">Cash on Delivery (COD)</div>
+            <div className="text-sm text-ink/50">Enable/disable COD for the whole store</div>
+          </div>
+          <input
+            type="checkbox"
+            checked={cfg.enable_cod}
+            onChange={set("enable_cod")}
+            className="h-6 w-6 accent-maroon"
+          />
+        </label>
+
+        <div className="grid grid-cols-2 gap-4 border-t border-sand pt-5">
+          <div>
+            <label className="label">Shipping per 500g (₹)</label>
+            <input type="number" className="input" value={cfg.shipping_per_500g} onChange={set("shipping_per_500g")} />
+          </div>
+          <div>
+            <label className="label">Free shipping above (₹)</label>
+            <input type="number" className="input" value={cfg.free_shipping_above} onChange={set("free_shipping_above")} />
+          </div>
+          <div>
+            <label className="label">COD extra fee (₹)</label>
+            <input type="number" className="input" value={cfg.cod_fee} onChange={set("cod_fee")} />
+          </div>
+        </div>
+
+        {/* hero sale banner */}
+        <div className="border-t border-sand pt-5">
+          <label className="flex items-center justify-between">
+            <div>
+              <div className="font-medium">Sale / Offer Banner</div>
+              <div className="text-sm text-ink/50">Show a scrolling strip at the top of the store</div>
+            </div>
+            <input
+              type="checkbox"
+              checked={cfg.banner_active}
+              onChange={set("banner_active")}
+              className="h-6 w-6 accent-maroon"
+            />
+          </label>
+          <input
+            className="input mt-3"
+            placeholder="e.g. 🎉 Festive Sale — Flat 10% off with code FESTIVE10!"
+            value={cfg.banner_text || ""}
+            onChange={set("banner_text")}
+          />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button onClick={save} className="btn-primary">Save Settings</button>
+          {saved && <span className="text-sm text-green-700">Saved ✓</span>}
+        </div>
+      </div>
+
+      {/* Change admin login */}
+      <div className="mt-8 space-y-4 rounded-xl border border-sand bg-white p-6">
+        <div>
+          <h2 className="font-serif text-xl text-maroon">Change Admin Login</h2>
+          <p className="text-sm text-ink/50">
+            Current username: <b>{cfg.admin_username}</b>
+          </p>
+        </div>
+
+        <div>
+          <label className="label">Current Password *</label>
+          <input
+            type="password"
+            className="input"
+            value={cred.current_password}
+            onChange={(e) => setCred({ ...cred, current_password: e.target.value })}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label">New Username (optional)</label>
+            <input
+              className="input"
+              placeholder={cfg.admin_username}
+              value={cred.new_username}
+              onChange={(e) => setCred({ ...cred, new_username: e.target.value })}
+            />
+          </div>
+          <div>
+            <label className="label">New Password (optional)</label>
+            <input
+              type="password"
+              className="input"
+              placeholder="leave blank to keep"
+              value={cred.new_password}
+              onChange={(e) => setCred({ ...cred, new_password: e.target.value })}
+            />
+          </div>
+        </div>
+
+        {credErr && <p className="text-sm text-red-700">{credErr}</p>}
+        {credMsg && <p className="text-sm text-green-700">{credMsg}</p>}
+
+        <button onClick={saveCreds} className="btn-primary">Update Login</button>
+        <p className="text-xs text-ink/50">
+          Forgot password? Run <code className="rounded bg-sand px-1">python reset_admin.py &lt;username&gt; &lt;password&gt;</code> in the backend folder.
+        </p>
+      </div>
+    </div>
+  );
+}
