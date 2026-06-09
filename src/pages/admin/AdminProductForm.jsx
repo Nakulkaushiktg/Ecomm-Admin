@@ -22,8 +22,10 @@ export default function AdminProductForm() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
-  // per-variant stock, keyed by "size|color"
+  // per-variant stock/price/mrp, keyed by "size|color"
   const [variantStock, setVariantStock] = useState({});
+  const [variantPrice, setVariantPrice] = useState({});
+  const [variantMrp, setVariantMrp] = useState({});
 
   const vKey = (size, color) => `${size}|${color}`;
 
@@ -55,9 +57,16 @@ export default function AdminProductForm() {
           videos: p.videos || [],
           sizes: (p.sizes || []).join(", "), colors: (p.colors || []).join(", "),
         });
-        const vs = {};
-        (p.variants || []).forEach((v) => { vs[`${v.size}|${v.color}`] = v.stock; });
+        const vs = {}, vp = {}, vm = {};
+        (p.variants || []).forEach((v) => {
+          const k = `${v.size}|${v.color}`;
+          vs[k] = v.stock;
+          vp[k] = v.price ? v.price : "";
+          vm[k] = v.mrp ? v.mrp : "";
+        });
         setVariantStock(vs);
+        setVariantPrice(vp);
+        setVariantMrp(vm);
       }
     });
   }, [id]);
@@ -127,6 +136,8 @@ export default function AdminProductForm() {
       size: c.size,
       color: c.color,
       stock: Number(variantStock[vKey(c.size, c.color)]) || 0,
+      price: Number(variantPrice[vKey(c.size, c.color)]) || 0,
+      mrp: Number(variantMrp[vKey(c.size, c.color)]) || 0,
     }));
     const payload = {
       ...form,
@@ -238,27 +249,41 @@ export default function AdminProductForm() {
           </div>
         </div>
 
-        {/* per-variant stock grid */}
+        {/* per-variant stock + price grid */}
         {combos.length > 0 && (
           <div className="rounded-xl border border-sand bg-sand/20 p-4">
-            <label className="label">Stock per variant</label>
+            <label className="label">Stock & Price per variant</label>
             <p className="mb-2 text-xs text-ink/50">
-              Set how many you have of each {form.sizes && form.colors ? "size + color" : form.sizes ? "size" : "color"} combination.
+              Set quantity and optional price/MRP for each {form.sizes && form.colors ? "size + color" : form.sizes ? "size" : "color"}.
+              Leave price/MRP blank to use the product's base price above.
             </p>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2">
               {combos.map((c) => {
                 const key = vKey(c.size, c.color);
                 const label = [c.size, c.color].filter(Boolean).join(" / ");
                 return (
-                  <div key={key} className="flex items-center gap-3 rounded-lg bg-white px-3 py-2">
-                    <span className="flex-1 text-sm font-medium">{label}</span>
+                  <div key={key} className="flex flex-wrap items-center gap-2 rounded-lg bg-white px-3 py-2">
+                    <span className="min-w-[90px] flex-1 text-sm font-medium">{label}</span>
                     <input
-                      type="number"
-                      min="0"
-                      className="w-24 rounded border border-sand px-2 py-1 text-sm outline-none focus:border-gold"
+                      type="number" min="0"
+                      className="w-20 rounded border border-sand px-2 py-1 text-sm outline-none focus:border-gold"
                       placeholder="qty"
                       value={variantStock[key] ?? ""}
                       onChange={(e) => setVariantStock({ ...variantStock, [key]: e.target.value })}
+                    />
+                    <input
+                      type="number" min="0"
+                      className="w-24 rounded border border-sand px-2 py-1 text-sm outline-none focus:border-gold"
+                      placeholder="price ₹"
+                      value={variantPrice[key] ?? ""}
+                      onChange={(e) => setVariantPrice({ ...variantPrice, [key]: e.target.value })}
+                    />
+                    <input
+                      type="number" min="0"
+                      className="w-24 rounded border border-sand px-2 py-1 text-sm outline-none focus:border-gold"
+                      placeholder="MRP ₹"
+                      value={variantMrp[key] ?? ""}
+                      onChange={(e) => setVariantMrp({ ...variantMrp, [key]: e.target.value })}
                     />
                   </div>
                 );
