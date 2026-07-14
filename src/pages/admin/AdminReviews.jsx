@@ -46,6 +46,15 @@ export default function AdminReviews() {
                   <Stars value={r.rating} />
                 </div>
                 {r.comment && <p className="mt-1 text-sm text-ink/70">{r.comment}</p>}
+                {r.image_url && (
+                  <a href={r.image_url} target="_blank" rel="noreferrer" title="Open full image">
+                    <img
+                      src={r.image_url}
+                      alt="review"
+                      className="mt-2 h-20 w-20 rounded-lg border border-sand object-cover transition hover:opacity-90"
+                    />
+                  </a>
+                )}
                 <p className="mt-1 text-xs text-ink/40">
                   {new Date(r.created_at).toLocaleDateString()}
                 </p>

@@ -8,6 +8,7 @@ const EMPTY = {
   price: "", mrp: "", stock: "", weight_grams: 500, images: [], videos: [],
   sizes: "", colors: "",   // raw text; split on space OR comma at save
   is_active: true, is_featured: false, is_bestseller: false,
+  is_new: false, is_trending: false,
 };
 
 // split on spaces, commas or newlines -> clean list
@@ -357,7 +358,7 @@ export default function AdminProductForm() {
           </div>
         </div>
 
-        <div className="flex gap-6">
+        <div className="flex flex-wrap gap-6">
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={form.is_active} onChange={setBool("is_active")} />
             Active (visible in store)
@@ -369,6 +370,14 @@ export default function AdminProductForm() {
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={form.is_bestseller} onChange={setBool("is_bestseller")} />
             Bestseller badge
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={form.is_new} onChange={setBool("is_new")} />
+            New badge
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={form.is_trending} onChange={setBool("is_trending")} />
+            Trending badge
           </label>
         </div>
 
