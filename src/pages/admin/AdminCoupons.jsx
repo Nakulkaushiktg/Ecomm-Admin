@@ -93,7 +93,7 @@ export default function AdminCoupons() {
       </form>
       {error && <p className="mt-2 text-sm text-red-700">{error}</p>}
 
-      <div className="mt-6 overflow-hidden rounded-xl border border-sand bg-white">
+      <div className="mt-6 overflow-x-auto rounded-xl border border-sand bg-white">
         <table className="w-full text-sm">
           <thead className="bg-sand/60 text-left text-xs uppercase tracking-wide text-ink/60">
             <tr>

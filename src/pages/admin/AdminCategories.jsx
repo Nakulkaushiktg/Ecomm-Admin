@@ -146,7 +146,35 @@ export default function AdminCategories() {
       </form>
       {error && <p className="mt-2 text-sm text-red-700">{error}</p>}
 
-      <div className="mt-6 overflow-hidden rounded-xl border border-sand bg-white">
+      {/* mobile cards */}
+      <div className="mt-6 space-y-3 md:hidden">
+        {cats.map((c) => (
+          <div key={c.id} className="rounded-xl border border-sand bg-white p-3">
+            <div className="flex items-center gap-3">
+              {c.image ? (
+                <img src={c.image} alt="" className="h-11 w-11 rounded-lg object-cover" />
+              ) : (
+                <span className="grid h-11 w-11 place-items-center rounded-lg bg-sand text-xl">{c.emoji}</span>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="font-medium">{c.label}</p>
+                <p className="font-mono text-xs text-ink/50">{c.key} · order {c.sort_order}</p>
+              </div>
+              <span className={`rounded-full px-2 py-0.5 text-xs ${c.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                {c.is_active ? "Active" : "Hidden"}
+              </span>
+            </div>
+            <div className="mt-3 flex gap-2">
+              <button onClick={() => edit(c)} className="flex-1 rounded-full border border-maroon/30 py-2 text-sm font-medium text-maroon">Edit</button>
+              <button onClick={() => del(c.id)} className="flex-1 rounded-full border border-red-300 py-2 text-sm font-medium text-red-700">Delete</button>
+            </div>
+          </div>
+        ))}
+        {cats.length === 0 && <p className="py-6 text-center text-ink/50">No categories yet.</p>}
+      </div>
+
+      {/* desktop table */}
+      <div className="mt-6 hidden overflow-hidden rounded-xl border border-sand bg-white md:block">
         <table className="w-full text-sm">
           <thead className="bg-sand/60 text-left text-xs uppercase tracking-wide text-ink/60">
             <tr>

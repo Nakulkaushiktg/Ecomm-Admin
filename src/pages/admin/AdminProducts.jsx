@@ -46,7 +46,39 @@ export default function AdminProducts() {
       {loading ? (
         <Loader label="Loading products" />
       ) : (
-        <div className="mt-6 overflow-hidden rounded-xl border border-sand bg-white">
+        <>
+        {/* mobile cards — table columns get cut off on small screens */}
+        <div className="mt-6 space-y-3 md:hidden">
+          {products.map((p) => (
+            <div key={p.id} className="rounded-xl border border-sand bg-white p-3">
+              <div className="flex gap-3">
+                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-sand">
+                  {p.images?.[0] && <img src={p.images[0]} alt="" className="h-full w-full object-cover" />}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium">{p.name}</p>
+                  <p className="text-xs text-ink/60">{labelOf(p.category)} · {rupee(p.price)}</p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${p.stock <= 0 ? "bg-red-100 text-red-800" : p.stock <= 5 ? "bg-orange-100 text-orange-800" : "bg-sand text-ink"}`}>
+                      {p.stock <= 0 ? "Out of stock" : `${p.stock} in stock`}
+                    </span>
+                    <span className={`rounded-full px-2 py-0.5 text-xs ${p.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                      {p.is_active ? "Active" : "Hidden"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-3 flex gap-2">
+                <Link to={`/admin/products/${p.id}`} className="flex-1 rounded-full border border-maroon/30 py-2 text-center text-sm font-medium text-maroon">Edit</Link>
+                <button onClick={() => del(p.id, p.name)} className="flex-1 rounded-full border border-red-300 py-2 text-center text-sm font-medium text-red-700">Delete</button>
+              </div>
+            </div>
+          ))}
+          {products.length === 0 && <p className="py-6 text-center text-ink/50">No products yet.</p>}
+        </div>
+
+        {/* desktop table */}
+        <div className="mt-6 hidden overflow-hidden rounded-xl border border-sand bg-white md:block">
           <table className="w-full text-sm">
             <thead className="bg-sand/60 text-left text-xs uppercase tracking-wide text-ink/60">
               <tr>
@@ -101,6 +133,7 @@ export default function AdminProducts() {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );

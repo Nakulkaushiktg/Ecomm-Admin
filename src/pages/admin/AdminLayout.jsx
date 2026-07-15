@@ -44,6 +44,7 @@ export default function AdminLayout() {
           <button onClick={close} className="text-2xl text-cream/70 md:hidden">×</button>
         </div>
         <nav className="space-y-1" onClick={close}>
+          <NavLink to="/admin/dashboard" className={link}>Dashboard</NavLink>
           <NavLink to="/admin/orders" className={link}>Orders</NavLink>
           <NavLink to="/admin/products" className={link}>Products</NavLink>
           <NavLink to="/admin/products/new" className={link}>+ Add Product</NavLink>
