@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api, rupee } from "../../api.js";
 import { useConfirm } from "../../context/ConfirmContext.jsx";
+import Loader from "../../components/Loader.jsx";
 
 function ShipmentEditor({ order, onSaved }) {
   const [courier, setCourier] = useState(order.courier || "");
@@ -226,7 +227,7 @@ export default function AdminOrders() {
       </div>
 
       {loading ? (
-        <p className="mt-8 text-ink/50">Loading…</p>
+        <Loader label="Loading orders" />
       ) : filtered.length === 0 ? (
         <p className="mt-8 text-ink/50">No orders found.</p>
       ) : (

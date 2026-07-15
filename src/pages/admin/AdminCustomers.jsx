@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api.js";
 import { useConfirm } from "../../context/ConfirmContext.jsx";
+import Loader from "../../components/Loader.jsx";
 
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
@@ -70,7 +71,7 @@ export default function AdminCustomers() {
       )}
 
       {loading ? (
-        <p className="mt-8 text-ink/50">Loading…</p>
+        <Loader label="Loading customers" />
       ) : customers.length === 0 ? (
         <p className="mt-8 text-ink/50">No customers have signed up yet.</p>
       ) : (

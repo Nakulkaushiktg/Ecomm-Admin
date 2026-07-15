@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api, rupee } from "../../api.js";
+import Loader from "../../components/Loader.jsx";
 
 export default function AdminInvoice() {
   const { id } = useParams();
@@ -14,7 +15,7 @@ export default function AdminInvoice() {
       .catch((e) => e.response?.status === 401 && navigate("/admin/login"));
   }, [id]);
 
-  if (!o) return <p className="p-8 text-ink/50">Loading…</p>;
+  if (!o) return <Loader label="Loading invoice" />;
 
   return (
     <div className="mx-auto max-w-2xl p-6">

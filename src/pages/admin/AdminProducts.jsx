@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { api, rupee } from "../../api.js";
 import { useCategories } from "../../context/CategoriesContext.jsx";
 import { useConfirm } from "../../context/ConfirmContext.jsx";
+import Loader from "../../components/Loader.jsx";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -43,7 +44,7 @@ export default function AdminProducts() {
       </div>
 
       {loading ? (
-        <p className="mt-8 text-ink/50">Loading…</p>
+        <Loader label="Loading products" />
       ) : (
         <div className="mt-6 overflow-hidden rounded-xl border border-sand bg-white">
           <table className="w-full text-sm">

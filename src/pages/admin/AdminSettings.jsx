@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api.js";
+import Loader from "../../components/Loader.jsx";
 
 export default function AdminSettings() {
   const [cfg, setCfg] = useState(null);
@@ -53,7 +54,7 @@ export default function AdminSettings() {
     }
   };
 
-  if (!cfg) return <p className="text-ink/50">Loading…</p>;
+  if (!cfg) return <Loader label="Loading settings" />;
 
   const set = (k) => (e) =>
     setCfg({ ...cfg, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value });
