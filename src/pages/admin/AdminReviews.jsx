@@ -30,9 +30,17 @@ export default function AdminReviews() {
     load();
   };
 
+  const toggle = async (r) => {
+    await api.put(`/api/admin/reviews/${r.id}/visibility?show=${!r.show_on_site}`);
+    load();
+  };
+
   return (
     <div>
       <h1 className="font-serif text-3xl text-maroon">Customer Reviews</h1>
+      <p className="mt-1 text-sm text-ink/50">
+        Toggle "Shown" to choose which reviews appear on your store. Hidden ones stay here but not on the site.
+      </p>
 
       <div className="mt-6 space-y-3">
         {reviews.length === 0 ? (
@@ -59,9 +67,21 @@ export default function AdminReviews() {
                   {new Date(r.created_at).toLocaleDateString()}
                 </p>
               </div>
-              <button onClick={() => del(r.id)} className="text-sm text-red-700 hover:underline">
-                Delete
-              </button>
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                <button
+                  onClick={() => toggle(r)}
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                    r.show_on_site
+                      ? "bg-green-100 text-green-800 hover:bg-green-200"
+                      : "bg-sand text-ink/50 hover:bg-sand/70"
+                  }`}
+                >
+                  {r.show_on_site ? "✓ Shown" : "Hidden"}
+                </button>
+                <button onClick={() => del(r.id)} className="text-sm text-red-700 hover:underline">
+                  Delete
+                </button>
+              </div>
             </div>
           ))
         )}

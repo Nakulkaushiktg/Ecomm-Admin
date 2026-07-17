@@ -49,9 +49,11 @@ export default function AdminLayout() {
           <NavLink to="/admin/products" className={link}>Products</NavLink>
           <NavLink to="/admin/products/new" className={link}>+ Add Product</NavLink>
           <NavLink to="/admin/categories" className={link}>Categories</NavLink>
+          <NavLink to="/admin/banners" className={link}>Banners</NavLink>
           <NavLink to="/admin/coupons" className={link}>Coupons</NavLink>
           <NavLink to="/admin/reviews" className={link}>Reviews</NavLink>
           <NavLink to="/admin/customers" className={link}>Customers</NavLink>
+          <NavLink to="/admin/mail" className={link}>Mail</NavLink>
           <NavLink to="/admin/settings" className={link}>Settings</NavLink>
         </nav>
         <div className="mt-auto space-y-1">

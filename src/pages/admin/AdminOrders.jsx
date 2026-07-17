@@ -98,7 +98,7 @@ function customerWhatsApp(o) {
     `Namaste ${o.customer_name} 🙏\n\n` +
     `Thank you for shopping with *Kirti Thread Art* — where every piece is crafted with love. ✨\n\n` +
     `${statusLine}\n\n` +
-    `🧾 *Order #${o.id}*\n${items}\n\n` +
+    `🧾 *Order #${o.order_number || o.id}*\n${items}\n\n` +
     `*Order Total: ₹${o.total}*\n` +
     `${payLine}\n\n` +
     `📦 *Delivery Address*\n${address}\n` +
@@ -239,7 +239,7 @@ export default function AdminOrders() {
                 onClick={() => setOpen(open === o.id ? null : o.id)}
               >
                 <div>
-                  <span className="font-serif text-lg text-maroon">#{o.id}</span>
+                  <span className="font-serif text-lg text-maroon">#{o.order_number || o.id}</span>
                   <span className="ml-3 font-medium">{o.customer_name}</span>
                   <span className="ml-3 text-sm text-ink/50">{o.phone}</span>
                 </div>

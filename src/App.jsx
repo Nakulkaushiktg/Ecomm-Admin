@@ -9,6 +9,8 @@ import AdminCategories from "./pages/admin/AdminCategories.jsx";
 import AdminCoupons from "./pages/admin/AdminCoupons.jsx";
 import AdminReviews from "./pages/admin/AdminReviews.jsx";
 import AdminCustomers from "./pages/admin/AdminCustomers.jsx";
+import AdminMail from "./pages/admin/AdminMail.jsx";
+import AdminBanners from "./pages/admin/AdminBanners.jsx";
 import AdminSettings from "./pages/admin/AdminSettings.jsx";
 import AdminInvoice from "./pages/admin/AdminInvoice.jsx";
 
@@ -28,6 +30,8 @@ export default function App() {
         <Route path="coupons" element={<AdminCoupons />} />
         <Route path="reviews" element={<AdminReviews />} />
         <Route path="customers" element={<AdminCustomers />} />
+        <Route path="mail" element={<AdminMail />} />
+        <Route path="banners" element={<AdminBanners />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>
       <Route path="/admin/invoice/:id" element={<AdminInvoice />} />

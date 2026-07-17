@@ -29,8 +29,7 @@ export default function AdminSettings() {
       shipping_per_500g: Number(cfg.shipping_per_500g),
       free_shipping_above: Number(cfg.free_shipping_above),
       cod_fee: Number(cfg.cod_fee),
-      banner_active: cfg.banner_active,
-      banner_text: cfg.banner_text,
+      instagram_url: cfg.instagram_url || "",
     });
     setCfg(data);
     setSaved(true);
@@ -95,23 +94,15 @@ export default function AdminSettings() {
 
         {/* hero sale banner */}
         <div className="border-t border-sand pt-5">
-          <label className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Sale / Offer Banner</div>
-              <div className="text-sm text-ink/50">Show a scrolling strip at the top of the store</div>
-            </div>
-            <input
-              type="checkbox"
-              checked={cfg.banner_active}
-              onChange={set("banner_active")}
-              className="h-6 w-6 accent-maroon"
-            />
-          </label>
+          <div className="font-medium">Instagram Profile</div>
+          <div className="text-sm text-ink/50">
+            Paste your Instagram URL to show a "Follow us" section on the store. Leave blank to hide it.
+          </div>
           <input
             className="input mt-3"
-            placeholder="e.g. 🎉 Festive Sale — Flat 10% off with code FESTIVE10!"
-            value={cfg.banner_text || ""}
-            onChange={set("banner_text")}
+            placeholder="https://instagram.com/yourhandle"
+            value={cfg.instagram_url || ""}
+            onChange={set("instagram_url")}
           />
         </div>
 

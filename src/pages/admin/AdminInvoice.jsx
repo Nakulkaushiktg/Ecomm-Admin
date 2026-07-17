@@ -35,7 +35,7 @@ export default function AdminInvoice() {
           </div>
           <div className="text-right">
             <div className="font-serif text-lg">INVOICE</div>
-            <div className="text-ink/60">#{o.id}</div>
+            <div className="text-ink/60">#{o.order_number || o.id}</div>
             <div className="text-xs text-ink/50">{new Date(o.created_at).toLocaleDateString()}</div>
           </div>
         </div>
