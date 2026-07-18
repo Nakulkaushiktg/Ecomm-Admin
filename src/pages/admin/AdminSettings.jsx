@@ -30,6 +30,10 @@ export default function AdminSettings() {
       free_shipping_above: Number(cfg.free_shipping_above),
       cod_fee: Number(cfg.cod_fee),
       instagram_url: cfg.instagram_url || "",
+      show_stats: cfg.show_stats,
+      show_loyalty: cfg.show_loyalty,
+      stat_orders: cfg.stat_orders || "500",
+      stat_designs: cfg.stat_designs || "50",
     });
     setCfg(data);
     setSaved(true);
@@ -93,6 +97,33 @@ export default function AdminSettings() {
         </div>
 
         {/* hero sale banner */}
+        <div className="border-t border-sand pt-5">
+          <div className="font-medium">Homepage Sections</div>
+          <div className="text-sm text-ink/50">Show/hide sections & edit the stat numbers on the store home.</div>
+          <div className="mt-3 space-y-3">
+            <label className="flex items-center justify-between">
+              <span className="text-sm">Stats band (counters)</span>
+              <input type="checkbox" checked={!!cfg.show_stats} onChange={set("show_stats")} className="h-5 w-5 accent-maroon" />
+            </label>
+            {cfg.show_stats && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="label">Happy Orders (number)</label>
+                  <input className="input" value={cfg.stat_orders || ""} onChange={set("stat_orders")} placeholder="500" />
+                </div>
+                <div>
+                  <label className="label">Unique Designs (number)</label>
+                  <input className="input" value={cfg.stat_designs || ""} onChange={set("stat_designs")} placeholder="50" />
+                </div>
+              </div>
+            )}
+            <label className="flex items-center justify-between">
+              <span className="text-sm">Loyalty promo band (Earn points)</span>
+              <input type="checkbox" checked={!!cfg.show_loyalty} onChange={set("show_loyalty")} className="h-5 w-5 accent-maroon" />
+            </label>
+          </div>
+        </div>
+
         <div className="border-t border-sand pt-5">
           <div className="font-medium">Instagram Profile</div>
           <div className="text-sm text-ink/50">
