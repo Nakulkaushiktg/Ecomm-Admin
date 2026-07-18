@@ -1,10 +1,37 @@
-import { useState } from "react";
-import { Outlet, NavLink, useNavigate, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, NavLink, useNavigate, Navigate, useLocation } from "react-router-dom";
+import { api } from "../../api.js";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const token = localStorage.getItem("admin_token");
   const [open, setOpen] = useState(false); // mobile drawer
+  const [giftCount, setGiftCount] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
+
+  // live badges: fetch on load & navigation, and auto-poll every 30s (no manual refresh)
+  useEffect(() => {
+    if (!token) return;
+    const fetchStats = () =>
+      api
+        .get("/api/admin/stats")
+        .then((r) => {
+          setGiftCount(r.data.gift_claims || 0);
+          setPendingOrders(r.data.pending_orders || 0);
+        })
+        .catch(() => {});
+    fetchStats();
+    const t = setInterval(fetchStats, 30000);
+    return () => clearInterval(t);
+  }, [location.pathname]);
+
+  const badge = (n) =>
+    n > 0 ? (
+      <span className="grid h-5 min-w-5 place-items-center rounded-full bg-red-600 px-1 text-[11px] font-bold text-white">
+        {n > 9 ? "9+" : n}
+      </span>
+    ) : null;
 
   if (!token) return <Navigate to="/admin/login" replace />;
 
@@ -45,7 +72,12 @@ export default function AdminLayout() {
         </div>
         <nav className="space-y-1" onClick={close}>
           <NavLink to="/admin/dashboard" className={link}>Dashboard</NavLink>
-          <NavLink to="/admin/orders" className={link}>Orders</NavLink>
+          <NavLink to="/admin/orders" className={link}>
+            <span className="flex items-center justify-between">
+              <span>Orders</span>
+              {badge(pendingOrders)}
+            </span>
+          </NavLink>
           <NavLink to="/admin/products" className={link}>Products</NavLink>
           <NavLink to="/admin/products/new" className={link}>+ Add Product</NavLink>
           <NavLink to="/admin/categories" className={link}>Categories</NavLink>
@@ -53,6 +85,12 @@ export default function AdminLayout() {
           <NavLink to="/admin/coupons" className={link}>Coupons</NavLink>
           <NavLink to="/admin/reviews" className={link}>Reviews</NavLink>
           <NavLink to="/admin/customers" className={link}>Customers</NavLink>
+          <NavLink to="/admin/gifts" className={link}>
+            <span className="flex items-center justify-between">
+              <span>Gifts 🎁</span>
+              {badge(giftCount)}
+            </span>
+          </NavLink>
           <NavLink to="/admin/mail" className={link}>Mail</NavLink>
           <NavLink to="/admin/settings" className={link}>Settings</NavLink>
         </nav>

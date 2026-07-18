@@ -11,6 +11,7 @@ import AdminReviews from "./pages/admin/AdminReviews.jsx";
 import AdminCustomers from "./pages/admin/AdminCustomers.jsx";
 import AdminMail from "./pages/admin/AdminMail.jsx";
 import AdminBanners from "./pages/admin/AdminBanners.jsx";
+import AdminGifts from "./pages/admin/AdminGifts.jsx";
 import AdminSettings from "./pages/admin/AdminSettings.jsx";
 import AdminInvoice from "./pages/admin/AdminInvoice.jsx";
 
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="reviews" element={<AdminReviews />} />
         <Route path="customers" element={<AdminCustomers />} />
         <Route path="mail" element={<AdminMail />} />
+        <Route path="gifts" element={<AdminGifts />} />
         <Route path="banners" element={<AdminBanners />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>

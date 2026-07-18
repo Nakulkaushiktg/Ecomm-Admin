@@ -153,17 +153,45 @@ export default function AdminOrders() {
   };
 
   const deleteOrder = async (o) => {
-    const ok = await confirm({
-      title: `Delete order #${o.id}?`,
-      message: "This will permanently remove the order and its items. This cannot be undone.",
-      confirmText: "Delete Order",
+    const label = o.order_number || o.id;
+    const ok1 = await confirm({
+      title: `Delete order #${label}?`,
+      message: "This permanently removes the order and its items.",
+      confirmText: "Continue",
     });
-    if (!ok) return;
+    if (!ok1) return;
+    const ok2 = await confirm({
+      title: "Are you sure?",
+      message: "This cannot be undone. Confirm again to delete.",
+      confirmText: "Yes, delete",
+    });
+    if (!ok2) return;
     try {
       await api.delete(`/api/admin/orders/${o.id}`);
       load();
     } catch (err) {
       alert(err.response?.data?.detail || "Could not delete order.");
+    }
+  };
+
+  const deleteAllOrders = async () => {
+    const ok1 = await confirm({
+      title: "Delete ALL orders?",
+      message: `This will permanently delete all ${orders.length} order(s) and their items.`,
+      confirmText: "Continue",
+    });
+    if (!ok1) return;
+    const ok2 = await confirm({
+      title: "Final confirmation ⚠️",
+      message: "Really delete EVERY order? There is NO way to recover them.",
+      confirmText: "Yes, delete everything",
+    });
+    if (!ok2) return;
+    try {
+      await api.post("/api/admin/orders/delete-all");
+      load();
+    } catch (err) {
+      alert(err.response?.data?.detail || "Could not delete orders.");
     }
   };
 
@@ -199,7 +227,17 @@ export default function AdminOrders() {
 
   return (
     <div>
-      <h1 className="font-serif text-3xl text-maroon">Orders</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="font-serif text-3xl text-maroon">Orders</h1>
+        {orders.length > 0 && (
+          <button
+            onClick={deleteAllOrders}
+            className="rounded-full border border-red-300 px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-600 hover:text-white"
+          >
+            Delete All
+          </button>
+        )}
+      </div>
 
       {/* dashboard */}
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
@@ -240,6 +278,11 @@ export default function AdminOrders() {
               >
                 <div>
                   <span className="font-serif text-lg text-maroon">#{o.order_number || o.id}</span>
+                  {o.gift_claimed && (
+                    <span className="ml-2 rounded-full bg-gold/20 px-2 py-0.5 text-xs font-semibold text-maroon">
+                      🎁 Free gift
+                    </span>
+                  )}
                   <span className="ml-3 font-medium">{o.customer_name}</span>
                   <span className="ml-3 text-sm text-ink/50">{o.phone}</span>
                 </div>

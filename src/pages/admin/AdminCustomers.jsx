@@ -84,6 +84,7 @@ export default function AdminCustomers() {
                 <th className="p-3">Phone</th>
                 <th className="p-3">Location</th>
                 <th className="p-3 text-center">Orders</th>
+                <th className="p-3 text-center">Points</th>
                 <th className="p-3">Joined</th>
                 <th className="p-3 text-right">Action</th>
               </tr>
@@ -105,6 +106,7 @@ export default function AdminCustomers() {
                     {[c.city, c.state].filter(Boolean).join(", ") || "—"}
                   </td>
                   <td className="p-3 text-center">{c.order_count}</td>
+                  <td className="p-3 text-center font-medium">{c.points || 0}</td>
                   <td className="p-3 text-ink/60">
                     {new Date(c.created_at).toLocaleDateString("en-IN", {
                       day: "numeric", month: "short", year: "numeric",

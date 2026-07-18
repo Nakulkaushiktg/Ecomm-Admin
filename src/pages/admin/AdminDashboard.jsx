@@ -58,7 +58,20 @@ export default function AdminDashboard() {
           to="/admin/products"
           tone={s.low_stock > 0 ? "ring-1 ring-orange-300" : ""}
         />
+        <Card
+          label="Gift Claims"
+          value={s.gift_claims || 0}
+          to="/admin/gifts"
+          tone={s.gift_claims > 0 ? "ring-1 ring-gold" : ""}
+        />
       </div>
+
+      {s.gift_claims > 0 && (
+        <div className="mt-4 rounded-xl border border-gold/40 bg-gold/10 p-4 text-sm text-maroon">
+          🎁 {s.gift_claims} order{s.gift_claims > 1 ? "s" : ""} to ship with a free gift.{" "}
+          <Link to="/admin/gifts" className="font-medium underline">View gift claims</Link>
+        </div>
+      )}
 
       {(s.low_stock > 0 || s.out_of_stock > 0) && (
         <div className="mt-4 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800">
