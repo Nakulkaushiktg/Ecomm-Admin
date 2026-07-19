@@ -4,19 +4,25 @@ import { api, rupee } from "../../api.js";
 import { useCategories } from "../../context/CategoriesContext.jsx";
 import { useConfirm } from "../../context/ConfirmContext.jsx";
 import Loader from "../../components/Loader.jsx";
+import { apiCache } from "../../lib/cache.js";
+
+const KEY = "/api/admin/products";
 
 export default function AdminProducts() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(() => apiCache.get(KEY) || []);
+  const [loading, setLoading] = useState(() => !apiCache.has(KEY));
   const { labelOf } = useCategories();
   const { confirm } = useConfirm();
   const navigate = useNavigate();
 
   const load = () => {
-    setLoading(true);
+    if (!apiCache.has(KEY)) setLoading(true);
     api
-      .get("/api/admin/products")
-      .then((r) => setProducts(r.data))
+      .get(KEY)
+      .then((r) => {
+        apiCache.set(KEY, r.data);
+        setProducts(r.data);
+      })
       .catch((e) => {
         if (e.response?.status === 401) navigate("/admin/login");
       })

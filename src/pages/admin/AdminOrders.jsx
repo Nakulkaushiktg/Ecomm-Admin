@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { api, rupee } from "../../api.js";
 import { useConfirm } from "../../context/ConfirmContext.jsx";
 import Loader from "../../components/Loader.jsx";
+import { apiCache } from "../../lib/cache.js";
 
 function ShipmentEditor({ order, onSaved }) {
   const [courier, setCourier] = useState(order.courier || "");
@@ -116,9 +117,11 @@ const badge = {
   cancelled: "bg-red-100 text-red-800",
 };
 
+const ORDERS_KEY = "/api/admin/orders";
+
 export default function AdminOrders() {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState(() => apiCache.get(ORDERS_KEY) || []);
+  const [loading, setLoading] = useState(() => !apiCache.has(ORDERS_KEY));
   const [open, setOpen] = useState(null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -126,10 +129,13 @@ export default function AdminOrders() {
   const { confirm } = useConfirm();
 
   const load = () => {
-    setLoading(true);
+    if (!apiCache.has(ORDERS_KEY)) setLoading(true);
     api
-      .get("/api/admin/orders")
-      .then((r) => setOrders(r.data))
+      .get(ORDERS_KEY)
+      .then((r) => {
+        apiCache.set(ORDERS_KEY, r.data);
+        setOrders(r.data);
+      })
       .catch((e) => {
         if (e.response?.status === 401) navigate("/admin/login");
       })

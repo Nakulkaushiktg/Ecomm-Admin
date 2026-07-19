@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../api.js";
 import { useConfirm } from "../../context/ConfirmContext.jsx";
 import Loader from "../../components/Loader.jsx";
+import { apiCache } from "../../lib/cache.js";
+
+const KEY = "/api/admin/customers";
 
 export default function AdminCustomers() {
-  const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [customers, setCustomers] = useState(() => apiCache.get(KEY) || []);
+  const [loading, setLoading] = useState(() => !apiCache.has(KEY));
   const [resetId, setResetId] = useState(null);
   const [newPass, setNewPass] = useState("");
   const [msg, setMsg] = useState("");
@@ -15,8 +18,11 @@ export default function AdminCustomers() {
 
   const load = () =>
     api
-      .get("/api/admin/customers")
-      .then((r) => setCustomers(r.data))
+      .get(KEY)
+      .then((r) => {
+        apiCache.set(KEY, r.data);
+        setCustomers(r.data);
+      })
       .catch((e) => e.response?.status === 401 && navigate("/admin/login"))
       .finally(() => setLoading(false));
 

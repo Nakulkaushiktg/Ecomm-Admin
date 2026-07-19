@@ -2,15 +2,21 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, rupee } from "../../api.js";
 import Loader from "../../components/Loader.jsx";
+import { apiCache } from "../../lib/cache.js";
+
+const KEY = "/api/admin/stats";
 
 export default function AdminDashboard() {
-  const [s, setS] = useState(null);
+  const [s, setS] = useState(() => apiCache.get(KEY) || null);
   const navigate = useNavigate();
 
   useEffect(() => {
     api
-      .get("/api/admin/stats")
-      .then((r) => setS(r.data))
+      .get(KEY)
+      .then((r) => {
+        apiCache.set(KEY, r.data);
+        setS(r.data);
+      })
       .catch((e) => e.response?.status === 401 && navigate("/admin/login"));
   }, []);
 
