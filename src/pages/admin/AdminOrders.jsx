@@ -144,8 +144,13 @@ export default function AdminOrders() {
 
   useEffect(load, []);
 
+  // cancelling puts stock back; re-opening a cancelled order fails if stock ran out
   const setStatus = async (id, status) => {
-    await api.put(`/api/admin/orders/${id}/status`, { status });
+    try {
+      await api.put(`/api/admin/orders/${id}/status`, { status });
+    } catch (err) {
+      alert(err.response?.data?.detail || "Could not update status.");
+    }
     load();
   };
 
